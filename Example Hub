@@ -1,0 +1,193 @@
+-- Load the UI Library
+local UiLb = loadstring(game:HttpGet(
+    "https://gist.githubusercontent.com/MjContiga1/0f5c53d149ae50ba2025a357ad1779ad/raw/b58a1e08602c5e59c0e270883987772e5899ffb2/Ui%20v9%20mj.lua"
+))()
+
+-- Create the Window
+local Window = UiLb:CreateWindow({
+    Title = "Example Hub",
+    Size = UDim2.new(0, 520, 0, 380),
+    Transparency = 0,
+    Theme = "Dark",
+    Blurring = true
+})
+
+-- Change Minimize Button Icon
+local floatingIcon = game.CoreGui:FindFirstChild("FloatingIcon", true)
+if floatingIcon then
+    floatingIcon.Image = "rbxassetid://SEU_ID"
+end
+
+-- 🌑 Apply real dark theme
+Window:SetSetting("Theme", {
+    Primary = Color3.fromRGB(14,14,14),
+    Secondary = Color3.fromRGB(18,18,18),
+    Component = Color3.fromRGB(24,24,24),
+    Interactables = Color3.fromRGB(32,32,32),
+
+    Tab = Color3.fromRGB(170,170,170),
+    Title = Color3.fromRGB(235,235,235),
+    Description = Color3.fromRGB(140,140,140),
+
+    Shadow = Color3.fromRGB(0,0,0),
+    Outline = Color3.fromRGB(28,28,28),
+    Icon = Color3.fromRGB(210,210,210),
+})
+
+------------------------------------------------
+-- SECTIONS
+------------------------------------------------
+Window:AddTabSection({ Name = "Main", Order = 1 })
+Window:AddTabSection({ Name = "Player", Order = 2 })
+Window:AddTabSection({ Name = "Misc", Order = 3 })
+
+------------------------------------------------
+-- TABS
+------------------------------------------------
+local HomeTab = Window:AddTab({
+    Title = "Home",
+    Section = "Main"
+})
+
+local PlayerTab = Window:AddTab({
+    Title = "Player",
+    Section = "Player"
+})
+
+local MiscTab = Window:AddTab({
+    Title = "Misc",
+    Section = "Misc"
+})
+
+------------------------------------------------
+-- HOME TAB
+------------------------------------------------
+
+-- Dynamic paragraph
+local status = "Idle"
+
+Window:AddParagraph({
+    Title = "Status",
+    Description = "Loading...",
+    Tab = HomeTab,
+    UpdateFunction = function()
+        return {
+            Title = "Hub Status",
+            Description = "Current state: " .. status
+        }
+    end
+})
+
+-- Button
+Window:AddButton({
+    Title = "Notify",
+    Description = "Shows a notification",
+    Tab = HomeTab,
+    Callback = function()
+        Window:Notify({
+            Title = "Hello",
+            Description = "This is a notification!",
+            Duration = 2
+        })
+    end
+})
+
+-- Input
+Window:AddInput({
+    Title = "Nickname",
+    Description = "Type something",
+    Tab = HomeTab,
+    Callback = function(text)
+        status = "Name set to: " .. text
+    end
+})
+
+------------------------------------------------
+-- PLAYER TAB
+------------------------------------------------
+
+-- Toggle
+Window:AddToggle({
+    Title = "God Mode",
+    Description = "Enable / Disable",
+    Default = false,
+    Tab = PlayerTab,
+    Callback = function(value)
+        status = value and "GodMode ON" or "GodMode OFF"
+        print("GodMode:", value)
+    end
+})
+
+-- Slider
+Window:AddSlider({
+    Title = "WalkSpeed",
+    Description = "Player speed",
+    MaxValue = 100,
+    AllowDecimals = false,
+    Tab = PlayerTab,
+    Callback = function(value)
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = value
+        end
+    end
+})
+
+-- Keybind
+Window:AddKeybind({
+    Title = "Reset Speed",
+    Description = "Reset WalkSpeed",
+    Tab = PlayerTab,
+    Callback = function()
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = 16
+        end
+        status = "WalkSpeed reset"
+    end
+})
+
+------------------------------------------------
+-- MISC TAB
+------------------------------------------------
+
+-- Simple dropdown
+Window:AddDropdown({
+    Title = "Choose Team",
+    Description = "Select one",
+    Tab = MiscTab,
+    Options = {
+        ["Red"] = "Red",
+        ["Blue"] = "Blue",
+        ["Green"] = "Green",
+    },
+    Callback = function(value)
+        status = "Selected team: " .. value
+    end
+})
+
+-- Multi dropdown
+Window:AddMultiDropdown({
+    Title = "Abilities",
+    Description = "Multiple selection",
+    Tab = MiscTab,
+    Options = {
+        ["Speed"] = "Speed",
+        ["Jump"] = "Jump",
+        ["Fly"] = "Fly",
+        ["Invisible"] = "Invisible"
+    },
+    Callback = function(values)
+        status = "Abilities: " .. table.concat(values, ", ")
+    end
+})
+
+-- Another button
+Window:AddButton({
+    Title = "Print Status",
+    Description = "Prints status to console",
+    Tab = MiscTab,
+    Callback = function()
+        print("STATUS:", status)
+    end
+})
